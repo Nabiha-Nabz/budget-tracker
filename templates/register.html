@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Budget T{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: url("{{ url_for('static', filename='img/inhome.jpg') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+    }
+
+    .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 500px; /* Wider container */
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-container .top-section {
+        background: linear-gradient(135deg, #4a148c, #000000); /* More black in gradient */
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        color: white;
+    }
+
+    .form-container .top-section h1 {
+        font-size: 2.5rem; /* Larger font size */
+        margin-bottom: 0.5rem;
+    }
+
+    .form-container .top-section p {
+        font-size: 1.1rem; /* Larger description */
+        opacity: 0.9;
+    }
+
+    .form-container .form-section {
+        padding: 2rem;
+    }
+
+    .form-container .form-section h2 {
+        color: #4a148c; /* Dark purple */
+        font-size: 1.75rem; /* Larger font size */
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-container .form-section input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .form-container .form-section input:focus {
+        outline: none;
+        border-color: #4a148c;
+        box-shadow: 0 0 5px rgba(74, 20, 140, 0.5);
+    }
+
+    .form-container .form-section .btn-register {
+        width: 100%;
+        padding: 0.75rem;
+        background: #4a148c;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .form-container .form-section .btn-register:hover {
+        background: #6a1b9a;
+    }
+
+    .form-container .form-section .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .form-container .form-section .login-link a {
+        color: #4a148c;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: opacity 0.3s ease;
+    }
+
+    .form-container .form-section .login-link a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    /* Fade-in animation for the website name */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .welcome-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: white;
+        animation: fadeIn 2s ease-in-out;
+        z-index: 2;
+    }
+</style>
+
+<!-- Welcome text that fades in and out -->
+<div class="welcome-text">Budget T</div>
+
+<div class="overlay"></div>
+<div class="form-container">
+    <div class="top-section">
+        <h1>Budget T</h1>
+        <p>Track, Save, and Thrive – Your Finances, Simplified!</p>
+    </div>
+    <div class="form-section">
+        <h2>Create Account</h2>
+        <form method="POST" action="{{ url_for('register') }}">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit" class="btn-register">Register</button>
+        </form>
+        <div class="login-link">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Hide the welcome text after 5 seconds
+    setTimeout(() => {
+        document.querySelector('.welcome-text').style.display = 'none';
+    }, 5000);
+</script>
+{% endblock %}

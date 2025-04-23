@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Set Budget - Budget Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <h1>Set Your Budget</h1>
+        <form method="POST" action="{{ url_for('set_budget') }}">
+            <div class="mb-3">
+                <label for="total_budget" class="form-label">Total Budget (₹)</label>
+                <input type="number" class="form-control" id="total_budget" name="total_budget" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Set Budget</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

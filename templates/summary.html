@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Summary - Budget Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .summary {
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+    }
+
+    .summary h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+
+    .summary th, .summary td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #444;
+    }
+
+    .summary th {
+        background-color: #4a148c;
+        color: white;
+    }
+
+    .summary tr:hover {
+        background-color: #2c2c2c;
+    }
+</style>
+
+<div class="summary">
+    <h1>Expenditure Summary</h1>
+    <p>Remaining Budget: ₹{{ budget.remaining_budget if budget else 0 }}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Item Name</th>
+                <th>Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.date }}</td>
+                <td>{{ transaction.category }}</td>
+                <td>{{ transaction.description }}</td>
+                <td>₹{{ transaction.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

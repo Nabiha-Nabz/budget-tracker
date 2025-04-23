@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Budget T{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    {% if current_user.is_authenticated %}
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="{{ url_for('index') }}" class="website-name">Budget T</a>
+        </div>
+        <div class="nav-middle">
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('summary') }}">Summary</a>
+            <a href="{{ url_for('previous_records') }}">Previous Records</a>
+            <a href="{{ url_for('faq') }}">FAQ</a>
+        </div>
+        <div class="nav-right">
+            <div class="profile-dropdown">
+                <div class="profile-circle" id="navProfileIcon">
+                    {% if current_user.profile_image %}
+                        <img src="{{ url_for('static', filename='profile_images/' + current_user.profile_image) }}" 
+                             alt="Profile" class="profile-icon">
+                    {% else %}
+                        <span class="profile-initial">{{ current_user.username[0] | upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="dropdown-content" id="dropdownContent">
+                    <a href="{{ url_for('profile') }}">Profile</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <script>
+        // Add event listener after DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileIcon = document.getElementById('navProfileIcon');
+            const dropdownContent = document.getElementById('dropdownContent');
+            
+            // Toggle dropdown
+            profileIcon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownContent.classList.toggle('show');
+            });
+            
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.profile-dropdown')) {
+                    dropdownContent.classList.remove('show');
+                }
+            });
+        });
+    </script>
+    {% endif %}
+    
+    <main class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main content block -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Toggle profile dropdown
+        function toggleDropdown() {
+            const dropdownContent = document.getElementById('dropdownContent');
+            dropdownContent.classList.toggle('show');
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-circle')) {
+                const dropdowns = document.getElementsByClassName('dropdown-content');
+                for (let dropdown of dropdowns) {
+                    if (dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

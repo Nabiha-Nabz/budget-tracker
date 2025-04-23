@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Budget Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .profile {
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .profile h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: #4a148c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        margin: 0 auto 1rem auto;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-details {
+        margin-bottom: 2rem;
+    }
+
+    .profile-details p {
+        margin: 0.5rem 0;
+        font-size: 1.1rem;
+    }
+
+    .profile-details a {
+        color: #e1bee7;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .profile-actions {
+        margin-top: 2rem;
+    }
+
+    .profile-actions button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin: 0.5rem;
+    }
+
+    .profile-actions .btn-reset {
+        background: #dc3545;
+        color: white;
+    }
+
+    .profile-actions .btn-reset:hover {
+        background: #c82333;
+    }
+
+    .profile-actions .btn-delete {
+        background: #dc3545;
+        color: white;
+    }
+
+    .profile-actions .btn-delete:hover {
+        background: #c82333;
+    }
+
+    .profile-actions .btn-logout {
+        background: #4a148c;
+        color: white;
+    }
+
+    .profile-actions .btn-logout:hover {
+        background: #6a1b9a;
+    }
+
+    .profile-actions .btn-upload {
+        background: #4a148c;
+        color: white;
+    }
+
+    .profile-actions .btn-upload:hover {
+        background: #6a1b9a;
+    }
+</style>
+
+<div class="profile">
+    <h1>Profile</h1>
+    <div class="profile-image">
+        {% if current_user.profile_image %}
+            <img src="{{ url_for('static', filename='profile_images/' + current_user.profile_image) }}" alt="Profile Image">
+        {% else %}
+            <span>{{ current_user.username[0] | upper }}</span>
+        {% endif %}
+    </div>
+    <div class="profile-actions">
+        <button class="btn-upload" onclick="document.getElementById('profileImageUpload').click()">Change Profile Image</button>
+        <input type="file" id="profileImageUpload" accept="image/*" style="display: none;">
+    </div>
+    <div class="profile-details">
+        <p>Username: {{ current_user.username }}</p>
+        <p>Email: {{ current_user.email }} <a onclick="changeEmail()">Change</a></p>
+        <p>Password: ******** <a onclick="changePassword()">Change</a></p>
+    </div>
+    <div class="profile-actions">
+        <button class="btn-reset" onclick="resetBudget()">Reset Budget</button>
+        <button class="btn-delete" onclick="deleteAccount()">Delete Account</button>
+        <br><br><br>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+</div>
+
+<script>
+document.getElementById('profileImageUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch("{{ url_for('upload_profile_image') }}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload(); // Force refresh to update all instances
+            } else {
+                alert(data.message || 'Upload failed');
+            }
+        });
+    }
+});
+
+    // Function to change email
+    function changeEmail() {
+        const newEmail = prompt('Enter your new email:');
+        if (newEmail) {
+            fetch("{{ url_for('change_email') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: newEmail })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Email updated successfully. Please log in again.');
+                      window.location.href = "{{ url_for('logout') }}";
+                  } else {
+                      alert(data.message || 'Failed to update email.');
+                  }
+              });
+        }
+    }
+
+    // Function to change password
+    function changePassword() {
+        const newPassword = prompt('Enter your new password:');
+        if (newPassword) {
+            fetch("{{ url_for('change_password') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password: newPassword })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      alert('Password updated successfully. Please log in again.');
+                      window.location.href = "{{ url_for('logout') }}";
+                  } else {
+                      alert(data.message || 'Failed to update password.');
+                  }
+              });
+        }
+    }
+
+    function resetBudget() {
+    if (confirm('Are you sure you want to reset your budget? This will clear all transactions.')) {
+        fetch("{{ url_for('reset_budget') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url; // Auto-redirect
+            } else {
+                alert('Failed to reset budget.');
+            }
+        });
+    }
+}
+
+function deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+        fetch("{{ url_for('delete_account') }}", {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Force full page reload to clear all session data
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Failed to delete account.');
+            }
+        });
+    }
+}
+
+    // Function to logout
+    function logout() {
+        window.location.href = "{{ url_for('logout') }}";
+    }
+</script>
+{% endblock %}

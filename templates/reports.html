@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Budget Tracker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Expense Reports</h1>
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Expense Breakdown by Category</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Total Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category, amount in expenses_by_category %}
+                        <tr>
+                            <td>{{ category }}</td>
+                            <td>₹{{ amount }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Budget Tracker{% endblock %}
+
+{% block content %}
+<style>
+    /* Global Styles */
+    body {
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        color: white;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .dashboard {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Row 1: Dashboard Heading and Remaining Budget */
+    .row-1 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .row-1 h1 {
+        font-size: 2.5rem;
+        margin: 0;
+    }
+
+    .row-1 .remaining-budget {
+        font-size: 1.2rem;
+        background: linear-gradient(135deg, #4a148c, #000000);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+    }
+
+    /* Add Budget Button */
+    .add-budget-btn {
+        display: block;
+        margin: 0 auto 2rem auto;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #4a148c, #000000);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .add-budget-btn:hover {
+        background: linear-gradient(135deg, #6a1b9a, #000000);
+    }
+
+    .add-budget-btn:disabled {
+        background: #444;
+        cursor: not-allowed;
+    }
+
+    /* Add Expenditure Section */
+    .add-expenditure {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .add-expenditure h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .add-expenditure .category-row {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        align-items: center;
+    }
+
+    .add-expenditure .category-row label {
+        flex: 1;
+        font-size: 1rem;
+    }
+
+    .add-expenditure .category-row input {
+        flex: 1;
+        padding: 0.5rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background: #1a1a1a;
+        color: white;
+    }
+
+    .add-expenditure .category-row button {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #4a148c, #000000);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .add-expenditure .category-row button:hover {
+        background: linear-gradient(135deg, #6a1b9a, #000000);
+    }
+
+    /* Progress Bar */
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background: #1a1a1a;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .progress-bar .progress {
+        height: 100%;
+        background: linear-gradient(135deg, #4a148c, #000000);
+        transition: width 0.3s ease;
+    }
+
+    .progress-bar .percentage {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 0.9rem;
+    }
+
+    /* Footer */
+    footer {
+        text-align: center;
+        padding: 1rem;
+        color: white;
+    }
+
+    /* Add Budget Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #2c2c2c;
+        padding: 2rem;
+        border-radius: 15px;
+        z-index: 1000;
+    }
+
+    .modal h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal input {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        background: #1a1a1a;
+        color: white;
+    }
+
+    .modal button {
+        padding: 0.5rem 1rem;
+        background: linear-gradient(135deg, #4a148c, #000000);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .modal button:hover {
+        background: linear-gradient(135deg, #6a1b9a, #000000);
+    }
+
+    .modal .close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .row-1 h1 {
+            font-size: 2rem;
+        }
+
+        .row-1 .remaining-budget {
+            font-size: 1rem;
+        }
+
+        .add-expenditure .category-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>
+
+<div class="dashboard">
+    <!-- Row 1: Dashboard Heading and Remaining Budget -->
+    <div class="row-1">
+        <h1>Dashboard</h1>
+        <div class="remaining-budget" id="remainingBudget">
+            Remaining Budget: ₹{{ budget.remaining_budget if budget else 0 }}
+        </div>
+    </div>
+
+    <!-- Add Budget Button -->
+    <button class="add-budget-btn" onclick="openBudgetModal()" id="addBudgetBtn" {% if budget and budget.total_budget > 0 %}disabled{% endif %}>Add Budget</button>
+
+    <!-- Add Expenditure Section -->
+    <div class="add-expenditure">
+        <h2>Add Expenditure</h2>
+        <div class="category-row">
+            <label>Entertainment</label>
+            <input type="text" placeholder="Item Name" id="entertainmentItem">
+            <input type="number" placeholder="Price" id="entertainmentPrice">
+            <button onclick="addExpenditure('Entertainment')">Add</button>
+        </div>
+        <div class="category-row">
+            <label>Food</label>
+            <input type="text" placeholder="Item Name" id="foodItem">
+            <input type="number" placeholder="Price" id="foodPrice">
+            <button onclick="addExpenditure('Food')">Add</button>
+        </div>
+        <div class="category-row">
+            <label>Travel</label>
+            <input type="text" placeholder="Item Name" id="travelItem">
+            <input type="number" placeholder="Price" id="travelPrice">
+            <button onclick="addExpenditure('Travel')">Add</button>
+        </div>
+        <div class="category-row">
+            <label>Electronics</label>
+            <input type="text" placeholder="Item Name" id="electronicsItem">
+            <input type="number" placeholder="Price" id="electronicsPrice">
+            <button onclick="addExpenditure('Electronics')">Add</button>
+        </div>
+        <div class="category-row">
+            <label>Rent</label>
+            <input type="text" placeholder="Item Name" id="rentItem">
+            <input type="number" placeholder="Price" id="rentPrice">
+            <button onclick="addExpenditure('Rent')">Add</button>
+        </div>
+        <div class="category-row">
+            <label>Other</label>
+            <input type="text" placeholder="Item Name" id="otherItem">
+            <input type="number" placeholder="Price" id="otherPrice">
+            <button onclick="addExpenditure('Other')">Add</button>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress" id="progressBar" style="width: {{ (budget.remaining_budget / budget.total_budget * 100) if budget and budget.total_budget != 0 else 0 }}%;"></div>
+        <div class="percentage" id="progressPercentage">
+            {{ ((budget.remaining_budget / budget.total_budget * 100) | round(2)) if budget and budget.total_budget != 0 else 0 }}%
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin: 2rem 0;">
+    <button class="btn-download-report" onclick="generateReport()">
+        <i class="fas fa-download"></i> Download Report
+    </button>
+</div>
+
+
+
+<!-- Footer -->
+<footer>
+    &copy; 2023 Budget Tracker. All rights reserved.
+</footer>
+
+<!-- Add Budget Modal -->
+<div id="budgetModal" class="modal">
+    <h2>Add Budget</h2>
+    <input type="number" id="budgetAmount" placeholder="Enter Budget (₹)">
+    <button onclick="saveBudget()">Save</button>
+    <button class="close-btn" onclick="closeBudgetModal()">×</button>
+</div>
+
+<script>
+    // Budget Modal Functions
+    function openBudgetModal() {
+        document.getElementById('budgetModal').style.display = 'block';
+    }
+
+    function closeBudgetModal() {
+        document.getElementById('budgetModal').style.display = 'none';
+    }
+
+    function saveBudget() {
+        const budgetAmount = parseFloat(document.getElementById('budgetAmount').value);
+        if (budgetAmount) {
+            fetch("{{ url_for('set_budget') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ total_budget: budgetAmount })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      location.reload();
+                  } else {
+                      alert('Failed to set budget.');
+                  }
+              });
+        } else {
+            alert('Please enter a valid budget amount.');
+        }
+    }
+
+    // Add Expenditure Function
+    function addExpenditure(category) {
+        const itemName = document.getElementById(`${category.toLowerCase()}Item`).value;
+        const price = parseFloat(document.getElementById(`${category.toLowerCase()}Price`).value);
+
+        if (itemName && price) {
+            fetch("{{ url_for('add_expense') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description: itemName, amount: price, category: category })
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.success) {
+                      // Clear input fields
+                      document.getElementById(`${category.toLowerCase()}Item`).value = '';
+                      document.getElementById(`${category.toLowerCase()}Price`).value = '';
+                      location.reload();
+                  } else {
+                      alert('Failed to add expense.');
+                  }
+              });
+        } else {
+            alert('Please fill in both item name and price.');
+        }
+    }
+    function generateReport() {
+    window.location.href = "{{ url_for('generate_report') }}";
+}
+</script>
+{% endblock %}

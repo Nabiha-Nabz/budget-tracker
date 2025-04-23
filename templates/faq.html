@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - Budget Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .faq {
+        background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+    }
+
+    .faq h1 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .faq-item {
+        margin-bottom: 2rem;
+    }
+
+    .faq-item h3 {
+        color: #e1bee7; /* Light purple */
+        margin-bottom: 0.5rem;
+    }
+
+    .faq-item p {
+        margin: 0;
+        font-size: 1rem;
+    }
+</style>
+
+<div class="faq">
+    <h1>Frequently Asked Questions</h1>
+    <div class="faq-item">
+        <h3>How do I set a budget?</h3>
+        <p>Go to the Dashboard and click on "Set Budget" to enter your total budget.</p>
+    </div>
+    <div class="faq-item">
+        <h3>How do I add an expense?</h3>
+        <p>Go to the Dashboard and click on "Add Expense" to enter the details of your expense.</p>
+    </div>
+    <div class="faq-item">
+        <h3>Can I reset my budget?</h3>
+        <p>Yes, you can reset your budget from the Profile page.</p>
+    </div>
+    <div class="faq-item">
+        <h3>How do I delete my account?</h3>
+        <p>Go to the Profile page and click on "Delete Account".</p>
+    </div>
+    <div class="faq-item">
+        <h3>How do I change my profile picture?</h3>
+        <p>Go to the Profile page and click on your profile image to upload a new one.</p>
+    </div>
+    <div class="faq-item">
+        <h3>How do I view my previous budgets?</h3>
+        <p>Go to the "Previous Records" page to view all your previous budgets and expenses.</p>
+    </div>
+</div>
+{% endblock %}

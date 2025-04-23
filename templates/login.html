@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Budget T{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: url("{{ url_for('static', filename='img/inhome.jpg') }}") no-repeat center center fixed;
+        background-size: cover;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .form-container {
+        background: white;
+        padding: 0; /* Changed from 2rem to 0 */
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 500px;
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInForm 1s ease-in-out 6s forwards;
+    }
+
+    .form-container .top-section {
+        background: linear-gradient(135deg, #4a148c, #000000);
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        color: white;
+    }
+
+    .form-container .top-section h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-container .top-section p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .form-container .form-section {
+        padding: 2rem;
+    }
+
+    .form-container .form-section h2 {
+        color: #4a148c;
+        font-size: 1.75rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-container .form-section input {
+        width: 100%;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .form-container .form-section input:focus {
+        outline: none;
+        border-color: #4a148c;
+        box-shadow: 0 0 5px rgba(74, 20, 140, 0.5);
+    }
+
+    .form-container .form-section .checkbox-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .form-container .form-section .checkbox-row .remember-me {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-container .form-section .checkbox-row .remember-me label {
+        color: #4a148c;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+
+    .form-container .form-section .checkbox-row a {
+        color: #4a148c;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: opacity 0.3s ease;
+    }
+
+    .form-container .form-section .checkbox-row a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    .form-container .form-section .btn-login {
+        width: 100%;
+        padding: 0.75rem;
+        background: #4a148c;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .form-container .form-section .btn-login:hover {
+        background: #6a1b9a;
+    }
+
+    .form-container .form-section .create-account {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+
+    .form-container .form-section .create-account a {
+        color: #4a148c;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: opacity 0.3s ease;
+    }
+
+    .form-container .form-section .create-account a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    @keyframes fadeInForm {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .welcome-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 4rem;
+        color: white;
+        animation: fadeIn 2s ease-in-out, fadeOut 2s ease-in-out 4s forwards;
+        z-index: 2;
+    }
+
+    .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+        animation: shake 0.5s;
+    }
+
+    .alert-danger {
+        background: #ffebee;
+        color: #c62828;
+        border: 1px solid #ef9a9a;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
+
+<!-- Welcome text that fades in and out -->
+<div class="welcome-text">Budget T</div>
+
+<div class="overlay"></div>
+<div class="form-container">
+    <div class="top-section">
+        <h1>Budget T</h1>
+        <p>Track, Save, and Thrive – Your Finances, Simplified!</p>
+    </div>
+    <div class="form-section">
+        <h2>Welcome Back</h2>
+        
+        <!-- Error Message Container -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-{{ messages[0][0] }}">
+                    {{ messages[0][1] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+    
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="email" name="email" placeholder="Email" 
+                   value="{{ email if email else '' }}" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <div class="checkbox-row">
+                <div class="remember-me">
+                    <input type="checkbox" name="remember" id="remember">
+                    <label for="remember">Remember Me</label>
+                </div>
+                <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+        <div class="create-account">
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Create Account</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Hide the welcome text after 6 seconds
+    setTimeout(() => {
+        document.querySelector('.welcome-text').style.display = 'none';
+    }, 6000);
+</script>
+{% endblock %}
